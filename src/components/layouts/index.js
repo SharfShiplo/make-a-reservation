@@ -8,7 +8,7 @@ function Layout({children}) {
     >
         <AppHeader/>
         <main className="w-full bg-white max-w-[1440px] pt-20">
-          <div className="p-5 md:p-8 h-full">{children}</div>
+          <div className="p-5 md:p-8 h-full grid place-items-center">{children}</div>
         </main>
     </div>
   )
