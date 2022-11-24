@@ -45,6 +45,7 @@ const FromToForm = () => {
       setErrorMsg("From & To location can't be same.");
       return;
     }
+    navigate(ROUTES.DATETIME)
     setErrorMsg("")
   }
 

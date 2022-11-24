@@ -35,6 +35,7 @@ const PersonalInfoForm = () => {
     const input = {name}
     if(gender) input.gender = gender;
     console.log(input)
+    navigate(ROUTES.TOFROM)
   }
 
   return (
