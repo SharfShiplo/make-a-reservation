@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import AmountPage from "../amount-page";
 import LoginView from "../auth/login-form";
 import DateTimePage from "../date-time-page";
 import FromToPage from "../from-to-page/from-to-page";
@@ -14,7 +15,7 @@ const PrivateRoute = () => {
       <Route path={ROUTES.PERSONALINFO} exact element={<PersonalInformationPage/>} />
       <Route path={ROUTES.TOFROM} exact element={<FromToPage/>} />
       <Route path={ROUTES.DATETIME} exact element={<DateTimePage/>} />
-      <Route path={ROUTES.PAYMENT} exact element={<h2>Payment Confirmation Selection Page </h2>} />
+      <Route path={ROUTES.PAYMENT} exact element={<AmountPage/>} />
       <Route path={ROUTES.NOTE} exact element={<h2>Note Selection Page </h2>} />
       <Route path={ROUTES.FINALCONFIRMATION} exact element={<h2>Final Confirmation Page </h2>} />
       <Route path={ROUTES.ERROR} exact element={<h2>Error Page </h2>} />
