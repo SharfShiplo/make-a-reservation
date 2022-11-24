@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 import Button from "../ui/button";
 import Alert from "../ui/alert";
 import Input from "../ui/input";
+import { reservationAtom } from "../store/app-store";
+import { useRecoilState } from "recoil";
 
 const reservationFormSchema = yup.object().shape({
   reservationId: yup
@@ -27,7 +29,7 @@ const ReservationForm = () => {
     defaultValues,
     resolver: yupResolver(reservationFormSchema),
   });
-  
+
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
@@ -47,9 +49,9 @@ const ReservationForm = () => {
           error={errors?.reservationId?.message}
         />
         <div className="flex justify-end ">
-        <Button className="w-fit px-8" disabled={false}>
-          Search
-        </Button>
+          <Button className="w-fit px-8" disabled={false}>
+            Search
+          </Button>
         </div>
         {/* <Button className="w-full"  disabled={false} size={"medium"}>
           Search
@@ -69,16 +71,26 @@ const ReservationForm = () => {
 };
 
 function HomePage() {
+  const [_, setReservationState] = useRecoilState(reservationAtom);
+function updateCurrentPath (){
+  setReservationState((prev) => {
+    const savedValues = JSON.parse(JSON.stringify(prev));
+    savedValues.current_path = ROUTES.PERSONALINFO
+    return savedValues;
+  })
+}
   return (
     <div className="w-full max-w-[692px] h-fit">
       <div className="flex justify-center">
-        <LinkButton
-          href={ROUTES.PERSONALINFO}
-          className="h-11 w-full !bg-gray-500 !text-light hover:!bg-gray-600 sm:h-12"
-          size="medium"
-        >
-          Make a new reservation
-        </LinkButton>
+        <button className='bg-tranparent w-max h-max' onClick={updateCurrentPath}>
+          <LinkButton
+            href={ROUTES.PERSONALINFO}
+            className="h-11 w-full !bg-gray-500 !text-light hover:!bg-gray-600 sm:h-12"
+            size="medium"
+          >
+            Make a new reservation
+          </LinkButton>
+        </button>
       </div>
       <div className="flex flex-col items-center justify-center relative text-sm text-heading mt-8 sm:mt-11 mb-6 sm:mb-8">
         <hr className="w-full" />
@@ -86,7 +98,7 @@ function HomePage() {
           Or
         </span>
       </div>
-      <ReservationForm/>
+      <ReservationForm />
     </div>
   );
 }

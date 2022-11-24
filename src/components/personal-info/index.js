@@ -9,6 +9,8 @@ import Alert from "../ui/alert";
 import Input from "../ui/input";
 import Label from "../ui/label";
 import GENDER from "../config/gender.json"
+import { reservationStateValue } from "../store/app-store";
+import { useRecoilValue } from "recoil";
 const personalInfoFormSchema = yup.object().shape({
   name: yup
     .string()
@@ -88,11 +90,12 @@ const PersonalInfoForm = () => {
 };
 
 function PersonalInformationPage() {
+  const reservationState = useRecoilValue(reservationStateValue);
   return (
     <div className="w-full max-w-[692px] h-fit">
         <Input
           label={"Login Time"}
-          defaultValue={"Wednesday, November 23, 2022 (GMT+6)"}
+          defaultValue={reservationState.login_time}
           type="text"
           variant="outline"
           className="mb-4"
