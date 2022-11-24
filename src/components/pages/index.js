@@ -3,8 +3,13 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AmountPage from "../amount-page";
 import LoginView from "../auth/login-form";
 import DateTimePage from "../date-time-page";
+import ErrorPage from "../error-page";
+import FinalConfirmationPage from "../final-confirmation";
 import FromToPage from "../from-to-page/from-to-page";
+import NotFoundPage from "../not-found-page";
+import NotePage from "../note-page";
 import PersonalInformationPage from "../personal-info";
+import ThankYouPage from "../thank-you-page";
 import HomePage from "../top-page";
 import { ROUTES } from "../utils/routes";
 
@@ -16,12 +21,12 @@ const PrivateRoute = () => {
       <Route path={ROUTES.TOFROM} exact element={<FromToPage/>} />
       <Route path={ROUTES.DATETIME} exact element={<DateTimePage/>} />
       <Route path={ROUTES.PAYMENT} exact element={<AmountPage/>} />
-      <Route path={ROUTES.NOTE} exact element={<h2>Note Selection Page </h2>} />
-      <Route path={ROUTES.FINALCONFIRMATION} exact element={<h2>Final Confirmation Page </h2>} />
-      <Route path={ROUTES.ERROR} exact element={<h2>Error Page </h2>} />
-      <Route path={ROUTES.THANKYOU} exact element={<h2>Thank You Page </h2>} />
+      <Route path={ROUTES.NOTE} exact element={<NotePage/>} />
+      <Route path={ROUTES.FINAL_CONFIRMATION} exact element={<FinalConfirmationPage/>} />
+      <Route path={ROUTES.ERROR} exact element={<ErrorPage />} />
+      <Route path={ROUTES.THANKYOU} exact element={<ThankYouPage/>} />
       <Route path={ROUTES.RESERVATIONCHECK} element={<h2>Reservation details page</h2>} />
-      <Route path="*" exact element={<h2>Page not found</h2>} />
+      <Route path="*" exact element={<NotFoundPage/>} />
     </Routes>
   );
 };

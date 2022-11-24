@@ -6,7 +6,7 @@ export const ROUTES = {
     DATETIME: "/date-time-selection",
     PAYMENT: "/payment-confirmation",
     NOTE: "/additional-note",
-    FINALCONFIRMATION: "/final-confirmation",
+    FINAL_CONFIRMATION: "/final-confirmation",
     ERROR: "/error",
     THANKYOU: "/thank-you",
     RESERVATION: "/reservation",
