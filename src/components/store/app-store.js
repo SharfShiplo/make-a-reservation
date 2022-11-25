@@ -1,5 +1,6 @@
 import secureLocalStorage from "react-secure-storage";
 import { atom, selector } from "recoil";
+import { LOCALES } from "../../i18n/constants";
 import { MAKE_A_RESERVATION_APP } from "../config/constant";
 import { defaultNote } from "../config/note";
 
@@ -21,6 +22,7 @@ const localStorageEffect =
 export const reservationAtom = atom({
   key: "reservationAtom",
   default: {
+    locale: LOCALES.ENGLISH,
     current_path: "/login",
     authorized_user: false,
     login_time: null,

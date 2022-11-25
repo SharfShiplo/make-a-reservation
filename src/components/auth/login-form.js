@@ -9,6 +9,7 @@ import Button from "../ui/button";
 import Alert from "../ui/alert";
 import { useRecoilState } from "recoil";
 import { reservationAtom } from "../store/app-store";
+import { FormattedMessage } from "react-intl";
 
 const loginFormSchema = yup.object().shape({
   id: yup.string().required("You must need to provide your id"),
@@ -92,6 +93,9 @@ const LoginForm = () => {
 
 const LoginView = () => (
   <div className="w-full max-w-[692px] h-fit">
+    <FormattedMessage id="hello" >
+      {txt=><h2>{txt}</h2>}
+    </FormattedMessage>
     <LoginForm />
   </div>
 );
