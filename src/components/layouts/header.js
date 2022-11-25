@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { reservationStateValue } from "../store/app-store";
 import { ROUTES } from "../utils/routes";
-
+import CITIES from '../config/locations.json'
 const useAppTitle = ( ) => {
   const reservationState = useRecoilValue(reservationStateValue);
   const [appTitle, setAppTitle] = useState("Login");
@@ -19,7 +19,7 @@ const useAppTitle = ( ) => {
         setAppTitle(`${reservationState?.name || "Unknown user"}: Select From and To Location`);
         break;
       case ROUTES.DATETIME:
-        setAppTitle(`${reservationState?.location_from?.ja} ->${reservationState?.location_to?.ja}: Select Date and Time`);
+        setAppTitle(`${CITIES.find(city=>city.id === reservationState?.location_from).ja} -> ${CITIES.find(city=>city.id === reservationState?.location_to).ja} : Select Date and Time`);
         break;
       case ROUTES.PAYMENT:
         setAppTitle(`${reservationState?.name || "Unknown user"}: How much do you pay?`);

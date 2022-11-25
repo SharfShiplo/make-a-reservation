@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import AmountPage from "../amount-page";
 import LoginView from "../auth/login-form";
 import DateTimePage from "../date-time-page";
@@ -9,6 +10,7 @@ import FromToPage from "../from-to-page/from-to-page";
 import NotFoundPage from "../not-found-page";
 import NotePage from "../note-page";
 import PersonalInformationPage from "../personal-info";
+import { reservationStateValue } from "../store/app-store";
 import ThankYouPage from "../thank-you-page";
 import HomePage from "../top-page";
 import { ROUTES } from "../utils/routes";
@@ -32,7 +34,9 @@ const PrivateRoute = () => {
 };
 
 const RouterGuard = ({ children }) => {
-  const isAuthorized = true;
+  const { authorized_user } = useRecoilValue(reservationStateValue);
+
+  const isAuthorized = authorized_user;
   return isAuthorized ? (
     <PrivateRoute>{children}</PrivateRoute>
   ) : (

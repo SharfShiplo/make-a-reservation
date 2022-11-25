@@ -1,3 +1,15 @@
 {
-    "hello": "こんにちは世界"
+"hello": "こんにちは世界",
+"login_time": "ログイン時間",
+"personal_time": "個人情報入力時間",
+"from_time": "から 時刻を入力してください",
+"date_time":"日付 時刻 時刻を入力してください",
+"amount_time": "金額入力時間",
+"note_time": "入力時間に注意",
+"gender": "性別",
+"amount": "金額(円)",
+"from": "から",
+"to": "に",
+"date": "日にち",
+"time": "時間"
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import styles from "./radio/radio.module.css";
+import { NumericFormat } from "react-number-format";
 
 const classes = {
   root: "px-4 h-12 flex items-center w-full rounded appearance-none transition duration-300 ease-in-out text-heading text-sm focus:outline-none focus:ring-0",
@@ -21,12 +22,16 @@ const sizeClasses = {
 
 const Input = React.forwardRef(
   (
-    {
+    props,
+    ref
+  ) => {
+    const {
       id,
       className,
       label,
       note,
       name,
+      currency,
       error,
       children,
       variant = "normal",
@@ -34,11 +39,10 @@ const Input = React.forwardRef(
       shadow = false,
       type = "text",
       inputClassName,
+      onValueChange,
       readOnly = false,
       ...rest
-    },
-    ref
-  ) => {
+    } = props;
     const rootClassName = cn(
       classes.root,
       {
@@ -55,6 +59,32 @@ const Input = React.forwardRef(
       sizeClasses[dimension],
       inputClassName
     );
+
+    if(name === "amount"){
+      return (
+        <div className={className}>
+          <label
+            htmlFor={name}
+            className="block text-body-dark font-semibold text-sm leading-none mb-3"
+          >
+            {label}
+          </label>
+        <NumericFormat
+          defaultValue={props.value}
+          className={rootClassName}
+          allowLeadingZeros={false}
+          decimalScale={2}
+          fixedDecimalScale={2}
+          allowNegative={false}
+          maxLength={14}
+          thousandSeparator=","
+          prefix="৳"
+          onValueChange={onValueChange}
+          {...rest}
+          />
+          </div>
+      )
+    }
 
     if (type === "radio") {
       return (

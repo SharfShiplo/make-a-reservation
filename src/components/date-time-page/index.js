@@ -10,6 +10,10 @@ import Input from "../ui/input";
 import Label from "../ui/label";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { reservationAtom, reservationStateValue } from "../store/app-store";
+import useFormatedDateTime from "../../lib/hooks/useFormatedTime";
+import { LOCALES } from "../../i18n/constants";
 
 const defaultValues = {
   date: new Date(),
@@ -17,14 +21,10 @@ const defaultValues = {
 };
 
 const DateTimeForm = () => {
+  const [_, setReservationState] = useRecoilState(reservationAtom);
   const {
     handleSubmit,
-    register,
     control,
-    // setError,
-    // watch,
-    // getValues,
-    // formState: { errors },
   } = useForm({
     defaultValues,
   });
@@ -33,38 +33,46 @@ const DateTimeForm = () => {
   const navigate = useNavigate();
 
   function goBack() {
+    setReservationState((prev) => {
+      const savedValues = JSON.parse(JSON.stringify(prev));
+      savedValues.current_path = ROUTES.TOFROM;
+      return savedValues;
+    });
     navigate(-1);
   }
   const isValidTime = (time) => {
     const currentDate = new Date();
     const selectedDate = new Date(time);
-    return (currentDate.getHours() >= selectedDate.getHours());
+    return currentDate.getHours() >= selectedDate.getHours();
   };
 
-  const isCurrentDate = (date) =>{
-    const currentDate = new Date().toLocaleDateString("en-US");
-    const selectedDate = new Date(date).toLocaleDateString("en-US");
+  const isCurrentDate = (date) => {
+    const currentDate = new Date().toLocaleDateString(LOCALES.ENGLISH);
+    const selectedDate = new Date(date).toLocaleDateString(LOCALES.ENGLISH);
     return currentDate === selectedDate;
-  }
+  };
 
   function onSubmit({ date, time }) {
-
-    if(isCurrentDate(date)) {
-        if(isValidTime(time)){
-            setErrorMsg('You must select atleast one hour ahead from the current time.')
-            return;
-        }
-
-        if(errorMsg) setErrorMsg('')
-        // console.log(date, time)
-        navigate(ROUTES.PAYMENT);
+    if (isCurrentDate(date)) {
+      if (isValidTime(time)) {
+        setErrorMsg(
+          "You must select atleast one hour ahead from the current time."
+        );
         return;
+      }
     }
-    // console.log(date, time)
-    if(errorMsg) setErrorMsg('')
+    const DateTimeEnteredTime = new Date().toGMTString();
+    setReservationState((prev) => {
+      const savedValues = JSON.parse(JSON.stringify(prev));
+      savedValues.reservation_date = date;
+      savedValues.reservation_time = time;
+      savedValues.date_time_enter_time = DateTimeEnteredTime;
+      savedValues.current_path = ROUTES.PAYMENT;
+      return savedValues;
+    });
+    if (errorMsg) setErrorMsg("");
     navigate(ROUTES.PAYMENT);
   }
-
 
   return (
     <>
@@ -80,7 +88,7 @@ const DateTimeForm = () => {
                 onBlur={onBlur}
                 selected={value}
                 minDate={new Date()}
-                locale={navigator.languages[1]}
+                locale={LOCALES.ENGLISH}
               />
             )}
           />
@@ -101,7 +109,7 @@ const DateTimeForm = () => {
                 timeCaption="Time"
                 dateFormat="HH:mm"
                 timeFormat="HH:mm"
-                locale={navigator.languages[1]}
+                locale={LOCALES.ENGLISH}
               />
             )}
           />
@@ -136,11 +144,28 @@ const DateTimeForm = () => {
 };
 
 function DateTimePage() {
+  const { from_to_enter_time, personal_information_enter_time, login_time } =
+    useRecoilValue(reservationStateValue);
+  const loginTime = useFormatedDateTime({
+    time: login_time,
+    timeZone: "JST",
+  });
+
+  const personalInfoEnteredTime = useFormatedDateTime({
+    time: personal_information_enter_time,
+    timeZone: "JST",
+  });
+
+  const fromToEnteredTime = useFormatedDateTime({
+    time: from_to_enter_time,
+    timeZone: "JST",
+  });
+
   return (
     <div className="w-full max-w-[692px] h-fit">
       <Input
         label={"Login Time"}
-        defaultValue={"Wednesday, November 23, 2022 (GMT+6)"}
+        defaultValue={loginTime}
         type="text"
         variant="outline"
         className="mb-4"
@@ -148,7 +173,7 @@ function DateTimePage() {
       />
       <Input
         label={"Personal Information Enter Time"}
-        defaultValue={"Wednesday, November 23, 2022 (GMT+6)"}
+        defaultValue={personalInfoEnteredTime}
         type="text"
         variant="outline"
         className="mb-4"
@@ -156,7 +181,7 @@ function DateTimePage() {
       />
       <Input
         label={"From To Enter Time"}
-        defaultValue={"Wednesday, November 23, 2022 (GMT+6)"}
+        defaultValue={fromToEnteredTime}
         type="text"
         variant="outline"
         className="mb-4"

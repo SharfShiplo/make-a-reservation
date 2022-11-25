@@ -8,19 +8,19 @@ import Button from "../ui/button";
 import Alert from "../ui/alert";
 import Input from "../ui/input";
 import Label from "../ui/label";
-import GENDER from "../config/gender.json"
-import { reservationStateValue } from "../store/app-store";
-import { useRecoilValue } from "recoil";
+import GENDER from "../config/gender.json";
+import { reservationAtom, reservationStateValue } from "../store/app-store";
+import { useRecoilState, useRecoilValue } from "recoil";
+import useFormatedDateTime from "../../lib/hooks/useFormatedTime";
 const personalInfoFormSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required("You must need to provide your name"),
+  name: yup.string().required("You must need to provide your name"),
 });
-const defaultValues = {
-  name: "",
-};
 
-const PersonalInfoForm = () => {
+const PersonalInfoForm = ({ defaultValues }) => {
+  const [_, setReservationState] = useRecoilState(reservationAtom);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -29,15 +29,18 @@ const PersonalInfoForm = () => {
     defaultValues,
     resolver: yupResolver(personalInfoFormSchema),
   });
-  
-  const [errorMsg, setErrorMsg] = useState("");
-  const navigate = useNavigate();
 
   function onSubmit({ name, gender }) {
-    const input = {name}
-    if(gender) input.gender = gender;
-    console.log(input)
-    navigate(ROUTES.TOFROM)
+    const personalInfoEnteredTime = new Date().toGMTString();
+    setReservationState((prev) => {
+      const savedValues = JSON.parse(JSON.stringify(prev));
+      savedValues.name = name;
+      if (gender) savedValues.gender = gender;
+      savedValues.personal_information_enter_time = personalInfoEnteredTime;
+      savedValues.current_path = ROUTES.TOFROM;
+      return savedValues;
+    });
+    navigate(ROUTES.TOFROM);
   }
 
   return (
@@ -51,29 +54,29 @@ const PersonalInfoForm = () => {
           className="mb-4"
           error={errors?.name?.message}
         />
-        <div className='mb-2'>
-              <Label>{"Gender"}</Label>
-              <div className="space-x-4 flex items-center">
-                <Input
-                  id={GENDER[0].id}
-                  {...register("gender")}
-                  type="radio"
-                  value={GENDER[0].en}
-                  label={GENDER[0].en}
-                />
-                <Input
-                  id={GENDER[1].id}
-                  {...register("gender")}
-                  type="radio"
-                  value={GENDER[1].en}
-                  label={GENDER[1].en}
-                />
-              </div>
-            </div>
+        <div className="mb-2">
+          <Label>{"Gender"}</Label>
+          <div className="space-x-4 flex items-center">
+            <Input
+              id={GENDER[0].id}
+              {...register("gender")}
+              type="radio"
+              value={GENDER[0].id}
+              label={GENDER[0].en}
+            />
+            <Input
+              id={GENDER[1].id}
+              {...register("gender")}
+              type="radio"
+              value={GENDER[1].id}
+              label={GENDER[1].en}
+            />
+          </div>
+        </div>
         <div className="flex justify-end ">
-        <Button className="w-fit px-8" disabled={false}>
-          Next
-        </Button>
+          <Button className="w-fit px-8" disabled={false}>
+            Next
+          </Button>
         </div>
         {errorMsg ? (
           <Alert
@@ -90,18 +93,23 @@ const PersonalInfoForm = () => {
 };
 
 function PersonalInformationPage() {
-  const reservationState = useRecoilValue(reservationStateValue);
+  const { name, gender, login_time } = useRecoilValue(reservationStateValue);
+  const loginTime = useFormatedDateTime({
+    time: login_time,
+    timeZone: "JST",
+  });
+
   return (
     <div className="w-full max-w-[692px] h-fit">
-        <Input
-          label={"Login Time"}
-          defaultValue={reservationState.login_time}
-          type="text"
-          variant="outline"
-          className="mb-4"
-          readOnly={true}
-        />
-      <PersonalInfoForm/>
+      <Input
+        label={"Login Time"}
+        defaultValue={loginTime}
+        type="text"
+        variant="outline"
+        className="mb-4"
+        readOnly={true}
+      />
+      <PersonalInfoForm defaultValues={{ name, gender }} />
     </div>
   );
 }

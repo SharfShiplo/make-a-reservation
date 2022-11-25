@@ -9,7 +9,7 @@ const classes = {
   outline:
     "border border-border-400 bg-transparent text-body hover:text-light hover:bg-accent hover:border-accent",
   disabled:
-    "border border-border-base bg-gray-300 border-border-400 text-body cursor-not-allowed",
+    "border border-border-base bg-gray-300 border-border-400 !text-gray-300 cursor-not-allowed",
   disabledOutline: "border border-border-base text-muted cursor-not-allowed",
   small: "px-3 py-0 h-9 text-sm h-10",
   medium: "px-5 py-0 h-12",

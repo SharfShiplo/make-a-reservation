@@ -1,3 +1,15 @@
 {
-    "hello": "Hello world, test"
+    "hello": "Hello world",
+    "login_time": "Login Time",
+    "personal_time": "Personal Information Enter Time",
+    "from_time": "From To Enter Time",
+    "date_time":"Date Time Enter Time",
+    "amount_time": "Amount Enter Time",
+    "note_time": "Note Enter Time",
+    "gender": "Gender",
+    "amount": "Amount(JPY)",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "time": "Time"
 }

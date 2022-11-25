@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ROUTES } from "../utils/routes";
@@ -9,8 +8,8 @@ import Button from "../ui/button";
 import Alert from "../ui/alert";
 import { useRecoilState } from "recoil";
 import { reservationAtom } from "../store/app-store";
-import { FormattedMessage } from "react-intl";
-
+// import { FormattedMessage } from "react-intl";
+import { useNavigate, useSearchParams } from "react-router-dom";
 const loginFormSchema = yup.object().shape({
   id: yup.string().required("You must need to provide your id"),
   password: yup.string().required("You must need to provide your password"),
@@ -23,7 +22,10 @@ const defaultValues = {
 const LoginForm = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [_, setReservationState] = useRecoilState(reservationAtom);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const {
+    reset,
     register,
     handleSubmit,
     formState: { errors },
@@ -32,11 +34,20 @@ const LoginForm = () => {
     resolver: yupResolver(loginFormSchema),
   });
 
-  const navigate = useNavigate();
+  // retrieving Id from the url
+  const userId = useMemo(() => {
+    return searchParams.get("id");
+  }, [searchParams]);
 
-  function onSubmit({ id, password }) {
+  // retrieving Password from the url
+  const password = useMemo(() => {
+    return searchParams.get("password");
+  }, [searchParams]);
+
+  // login submit function
+  const onSubmit = ({ id, password }) => {
     const loginTime = new Date().toGMTString();
-    if (id === "badaccount" && password === "badpassword") {
+    if (id === "badaccount" || password === "badpassword") {
       setErrorMsg(
         "Login failed, Please check your id & password, then try again!"
       );
@@ -45,12 +56,22 @@ const LoginForm = () => {
     setReservationState((prev) => {
       const savedValues = JSON.parse(JSON.stringify(prev));
       savedValues.authorized_user = true;
-      savedValues.login_time = loginTime
-      savedValues.current_path = ROUTES.HOME
+      savedValues.login_time = loginTime;
+      savedValues.current_path = ROUTES.HOME;
       return savedValues;
-    })
+    });
     navigate(ROUTES.HOME);
-  }
+  };
+
+  // Login with id and password from the url
+  useEffect(() => {
+    if (userId && password) {
+      let defaultValues = {};
+      defaultValues.id = userId
+      defaultValues.password = password
+      reset({ ...defaultValues });
+    }
+  }, [userId, password, reset]);
 
   return (
     <>
@@ -81,10 +102,9 @@ const LoginForm = () => {
           className="mb-4"
         />
         <div className="flex justify-center items-center ">
-
-        <Button className="w-fit !px-10" disabled={false}>
-          Login
-        </Button>
+          <Button className="w-fit !px-10" disabled={false}>
+            Login
+          </Button>
         </div>
       </form>
     </>
@@ -93,9 +113,9 @@ const LoginForm = () => {
 
 const LoginView = () => (
   <div className="w-full max-w-[692px] h-fit">
-    <FormattedMessage id="hello" >
+    {/* <FormattedMessage id="hello" >
       {txt=><h2>{txt}</h2>}
-    </FormattedMessage>
+    </FormattedMessage> */}
     <LoginForm />
   </div>
 );

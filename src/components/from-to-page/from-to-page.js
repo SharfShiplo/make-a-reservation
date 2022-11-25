@@ -10,14 +10,33 @@ import Input from "../ui/input";
 import Label from "../ui/label";
 import CITIES from "../config/locations.json";
 import SelectInput from "../ui/select/select-input";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { reservationAtom, reservationStateValue } from "../store/app-store";
+import useFormatedDateTime from "../../lib/hooks/useFormatedTime";
 
 const tofromFormSchema = yup.object().shape({
-  from: yup.object().shape({id: yup.number().required('You must select a city as From'), ja: yup.string().nullable(), en: yup.string().nullable(),}),
-  to:  yup.object().shape({id: yup.number().required('You must select a city as To'), ja: yup.string().nullable(), en: yup.string().nullable(),}),
-  });
+  from: yup
+    .object()
+    .shape({
+      id: yup.number().required("You must select a city as From"),
+      ja: yup.string().nullable(),
+      en: yup.string().nullable(),
+    }),
+  to: yup
+    .object()
+    .shape({
+      id: yup.number().required("You must select a city as To"),
+      ja: yup.string().nullable(),
+      en: yup.string().nullable(),
+    }),
+});
 const defaultValues = null;
 
 const FromToForm = () => {
+  const [_, setReservationState] = useRecoilState(reservationAtom);
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+
   const methods = useForm({
     defaultValues,
     resolver: yupResolver(tofromFormSchema),
@@ -26,29 +45,36 @@ const FromToForm = () => {
   const {
     handleSubmit,
     control,
-    // setError,
-    // watch,
-    // getValues,
     formState: { errors },
   } = methods;
 
-  const [errorMsg, setErrorMsg] = useState("");
-  const navigate = useNavigate();
-
   function goBack() {
+    setReservationState((prev) => {
+      const savedValues = JSON.parse(JSON.stringify(prev));
+      savedValues.current_path = ROUTES.PERSONALINFO;
+      return savedValues;
+    });
     navigate(-1);
   }
 
   function onSubmit({ from, to }) {
-    console.log(from, to);
-    if(from.id === to.id){
+    if (from.id === to.id) {
       setErrorMsg("From & To location can't be same.");
       return;
     }
-    navigate(ROUTES.DATETIME)
-    setErrorMsg("")
-  }
+    const fromToEnteredTime = new Date().toGMTString();
+    setReservationState((prev) => {
+      const savedValues = JSON.parse(JSON.stringify(prev));
+      savedValues.location_from = from.id;
+      savedValues.location_to = to.id;
+      savedValues.from_to_enter_time = fromToEnteredTime;
+      savedValues.current_path = ROUTES.DATETIME;
+      return savedValues;
+    });
 
+    if (errorMsg) setErrorMsg("");
+    navigate(ROUTES.DATETIME);
+  }
 
   return (
     <FormProvider {...methods}>
@@ -83,17 +109,17 @@ const FromToForm = () => {
             </p>
           ) : null}
         </div>
-          {errorMsg ? (
-            <div className="mb-5">
-              <Alert
-                message={errorMsg}
-                variant="error"
-                closeable={true}
-                className="mt-5"
-                onClose={() => setErrorMsg("")}
-              />
-            </div>
-          ) : null}
+        {errorMsg ? (
+          <div className="mb-5">
+            <Alert
+              message={errorMsg}
+              variant="error"
+              closeable={true}
+              className="mt-5"
+              onClose={() => setErrorMsg("")}
+            />
+          </div>
+        ) : null}
         <div className="flex justify-between items-center ">
           <Button
             className="w-fit !bg-gray-500 !text-light hover:!bg-gray-600"
@@ -113,11 +139,24 @@ const FromToForm = () => {
 };
 
 function FromToPage() {
+  const { personal_information_enter_time, login_time } = useRecoilValue(
+    reservationStateValue
+  );
+  const loginTime = useFormatedDateTime({
+    time: login_time,
+    timeZone: "JST",
+  });
+
+  const personalInfoEnteredTime = useFormatedDateTime({
+    time: personal_information_enter_time,
+    timeZone: "JST",
+  });
+
   return (
     <div className="w-full max-w-[692px] h-fit">
       <Input
         label={"Login Time"}
-        defaultValue={"Wednesday, November 23, 2022 (GMT+6)"}
+        defaultValue={loginTime}
         type="text"
         variant="outline"
         className="mb-4"
@@ -125,7 +164,7 @@ function FromToPage() {
       />
       <Input
         label={"Personal Information Enter Time"}
-        defaultValue={"Wednesday, November 23, 2022 (GMT+6)"}
+        defaultValue={personalInfoEnteredTime}
         type="text"
         variant="outline"
         className="mb-4"
